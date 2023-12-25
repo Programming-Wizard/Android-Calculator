@@ -1,10 +1,11 @@
 package com.example.calculator
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import java.lang.ArithmeticException
+import androidx.appcompat.app.AppCompatActivity
+import java.util.Scanner
+import java.util.Stack
 
 class MainActivity : AppCompatActivity() {
     private lateinit var button0: Button
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvInput: TextView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
         button0 = findViewById(R.id.button0)
         button1 = findViewById(R.id.button1)
@@ -86,8 +88,11 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        buttonSolve.setOnClickListener{
-            handleSolving(tvInput.text.toString())
+        buttonSolve.setOnClickListener {
+//            handleSolving(tvInput.text.toString())
+            var realResultProbably = stack_Implementation.solve(tvInput.text.toString())
+            tvResult.text = realResultProbably.toString()
+
         }
 
         for (button in buttons) {
@@ -100,48 +105,100 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleButtonClick(input: String) {
+
         if (input == "." && tvInput.text.toString().contains(".")) {
             return
         }
         "${tvInput.text}$input".also { tvInput.text = it }
     }
+}
 
-    private fun handleSolving(getEqn: String) {
-        if (getEqn.contains("+")) {
-            val op1 = getEqn.substringBefore("+").toInt()
-            val op2 = getEqn.substringAfter("+").toInt()
-            val result: Int = op1 + op2
-            tvResult.text = result.toString()
-        }
-        else if (getEqn.contains("-")) {
-            val op1 = getEqn.substringBefore("-").toInt()
-            val op2 = getEqn.substringAfter("-").toInt()
-            val result: Int = op1 - op2
-            tvResult.text = result.toString()
-        }
-        else if (getEqn.contains("X")) {
-            val op1 = getEqn.substringBefore("X").toInt()
-            val op2 = getEqn.substringAfter("X").toInt()
-            val result: Int = op1 * op2
-            tvResult.text = result.toString()
-        }
-        else if (getEqn.contains("%")) {
-            val op1 = getEqn.substringBefore("%").toInt()
-            val op2 = getEqn.substringAfter("%").toInt()
-            val result: Int = op1 % op2
-            tvResult.text = result.toString()
-        }
-        else if (getEqn.contains("÷")) {
-            val op1 = getEqn.substringBefore("÷").toInt()
-            val op2 = getEqn.substringAfter("÷").toInt()
-            try {
-                val result: Int = op1 / op2
-                tvResult.text = result.toString()
 
-            } catch (e: ArithmeticException) {
-                println("error")
+object stack_Implementation {
+    @JvmStatic
+    public fun solve(exp :String): Int {
+        var input = exp
+        val OPstack = Stack<Char>()
+        val Numstack = Stack<Int>()
+        try {
+            println("Enter an equation : ")
+            //			String input = "15-6-9*5*8";
+            println(input)
+            input = input.replace(" ".toRegex(), "")
+            var i = 0
+            OuterMostLoop@ while (i < input.length) {
+                var currentChar = input[i]
+                if (currentChar == '+' || currentChar == '-' || currentChar == '*' || currentChar == '/') {
+                    if (!OPstack.isEmpty() && OPstack.peek() == '*') {
+                        evaluateOperation(OPstack, Numstack)
+                    }
+
+//					while (!OPstack.isEmpty() && hasPrecedence(currentChar, OPstack.peek()) || !OPstack.isEmpty() && OPstack.peek() == '-' && currentChar == '-' || !OPstack.isEmpty() && ) {
+//						evaluateOperation(OPstack, Numstack);
+//						System.out.println("operator stack : "+OPstack);
+//						System.out.println("number stack : "+Numstack);
+//					}
+                    OPstack.push(currentChar)
+                    println("operator stack : $OPstack")
+                } else if (Character.isDigit(currentChar)) {
+                    var number = ""
+                    var flag = i
+                    while (Character.isDigit(currentChar)) {
+                        number += currentChar
+                        if (flag == input.length - 1) {
+                            Numstack.push(number.toInt())
+                            println("number stack : $Numstack")
+                            break@OuterMostLoop
+                        }
+                        currentChar = input[++flag]
+                    }
+                    i = flag - 1
+                    Numstack.push(number.toInt())
+                    println("number stack : $Numstack")
+                }
+                i++
             }
-
+            while (!OPstack.isEmpty()) {
+                evaluateOperation(OPstack, Numstack)
+            }
+            if (!Numstack.isEmpty()) {
+                println("Result :" + Numstack.pop())
+                return result
+            } else {
+                println("Invalid expression.")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
+        return result
+    }
+
+    private fun hasPrecedence(currentCharacter: Char, operatorInStack: Char): Boolean {
+        return currentCharacter == '*' || currentCharacter == '/' && operatorInStack == '+' || operatorInStack == '-'
+    }
+
+    var result = 0
+    private fun evaluateOperation(OPstack: Stack<Char>, Numstack: Stack<Int>) {
+        val op = OPstack.pop()
+        val op2 = Numstack.pop()
+        val op1 = Numstack.pop()
+        println("op1 : $op1")
+        println("op2 : $op2")
+        println("op : $op")
+        when (op) {
+            '+' -> result = op1 + op2
+            '-' -> result = op1 - op2
+            '*' -> result = op1 * op2
+            '/' -> if (op2 != 0) {
+                result = op1 / op2
+            } else {
+                println("Error: Division by zero.")
+            }
+        }
+        println("result : " + result)
+        Numstack.push(result)
     }
 }
+
+
+
