@@ -115,6 +115,8 @@ class MainActivity : AppCompatActivity() {
             tvTempCov.setTextColor(ContextCompat.getColor(this,R.color.md_theme_light_secondary))
             tvCurrencyCov.setTextColor(Color.WHITE)
             tvCalculator.setTextColor(Color.WHITE)
+            val tempIntent = Intent(this, TemperatureActivity::class.java)
+            startActivity(tempIntent)
         }
         buttonClear.setOnClickListener {
             tvInput.text = ""

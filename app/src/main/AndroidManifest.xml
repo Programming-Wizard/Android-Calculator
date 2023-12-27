@@ -28,6 +28,9 @@
         <activity android:name=".CurrencyActivity">
 
         </activity>
+        <activity android:name=".TemperatureActivity">
+
+        </activity>
     </application>
 
 </manifest>

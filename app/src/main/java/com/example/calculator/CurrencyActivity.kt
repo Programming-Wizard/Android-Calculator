@@ -47,26 +47,24 @@ class CurrencyActivity : AppCompatActivity() {
         var IndianInput = etIndianInput.text.toString()
         var DollarInput = etDollarInput.text.toString()
 
-        if(DollarInput.isBlank() && IndianInput.isBlank()){
-            return
-        }
-
-        else    if(IndianInput.isEmpty()){
-            var input = etDollarInput.text.toString()
-            val inrPrice : Double = 83.17
-            val result : Double = input.toDouble() * inrPrice
-            val newResult = "%.2f".format(result)
-            etIndianInput.setText(newResult)
+        if(IndianInput.isEmpty()){
+                var input = etDollarInput.text.toString()
+                val inrPrice : Double = 83.17
+                val result : Double = input.toDouble() * inrPrice
+                val newResult = "%.2f".format(result)
+                etIndianInput.setText(newResult)
         }
 
         else if(DollarInput.isEmpty()){
-            var input = etIndianInput.text.toString()
-            val dollarPrice : Double = 0.12
-            val result : Double = input.toDouble() * dollarPrice
-            val newResult = "%.2f".format(result)
-            etDollarInput.setText(newResult)
+                var input = etIndianInput.text.toString()
+                val dollarPrice : Double = 0.12
+                val result : Double = input.toDouble() * dollarPrice
+                val newResult = "%.2f".format(result)
+                etDollarInput.setText(newResult)
         }
-
+        else if(DollarInput.isBlank() && IndianInput.isBlank()){
+            return
+        }
 
 
     }
